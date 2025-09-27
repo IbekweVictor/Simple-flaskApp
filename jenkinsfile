@@ -1,7 +1,7 @@
-pipeline{
+pipeline {
     agent any
 
-    stages{
+    stages {
         stage('Verify tooling'){
             steps{
                 bat 'docker --version'
@@ -11,7 +11,10 @@ pipeline{
 
         stage('checkout'){
             steps{
-                checkout scm
+                checkout scmGit(
+                branches: [[name: '*/main']], 
+                extensions: [], 
+                userRemoteConfigs: [[url: 'https://github.com/IbekweVictor/Simple-flaskApp.git']])
             }
         }
 
@@ -34,16 +37,15 @@ pipeline{
             }
         }
     }
-}
 
-post{
-    always{
-        bat 'docker-compose down'
-    }
-    success{
-        echo 'Build Success'
-    }
-    failure{
+    post {
+        always {
+            bat 'docker-compose down'
+        }
+        success {
+            echo 'Build Success'
+        }
+    failure {
         echo 'Build Failed'
     }
 }
